@@ -6,31 +6,30 @@ import (
 	"strings"
 
 	"github.com/alkukampela/etg/charconv"
+	"github.com/alkukampela/etg/messageformatter"
 
 	"github.com/spf13/cobra"
 )
 
-//var nonResponsive bool
+var (
+	responsive bool
 
-var rootCmd = &cobra.Command{
-	Use:   "etg",
-	Short: "A brief description of etg",
-	Long: `A longer description that plaas multiple lines and likely contains
-examples and usage of using your application. For example:
+	rootCmd = &cobra.Command{
+		Use:   "etg",
+		Short: "A brief description of etg",
+		Long: `Cobra is a CLI library for Go that empowers applications.
+	This application is a tool to generate the needed files
+	to quickly create a Cobra application.`,
+		Args: cobra.MinimumNArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			message := strings.Join(args, " ")
+			formattedMessage := messageformatter.Format(message, responsive)
+			boolMap := charconv.MessageToBoolMap(formattedMessage)
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Args: cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-
-		message := strings.Join(args, " ")
-		boolMap := charconv.MessageToBoolMap(message)
-
-		printBoolMap(boolMap)
-	},
-}
-
+			printBoolMap(boolMap)
+		},
+	}
+)
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
@@ -40,12 +39,10 @@ func Execute() {
 }
 
 func init() {
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("nonresponsive", "n", false, "print message to non responsive mode (in one line)")
-//	rootCmd.Flags().Bool(&nonResponsive, "nonresponsive", "n",
-//		"Print message to non responsive mode (in one line)")
+	rootCmd.Flags().BoolVarP(&responsive, "responsive", "r", false,
+		"print message in responsive mode (one letter per line)")
 }
+
 
 
 func printBoolMap(boolMap [][]bool) {
