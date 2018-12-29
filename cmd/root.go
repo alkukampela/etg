@@ -10,9 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cfgFile string
+//var nonResponsive bool
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "etg",
 	Short: "A brief description of etg",
@@ -22,21 +21,17 @@ examples and usage of using your application. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 
 		message := strings.Join(args, " ")
+		boolMap := charconv.MessageToBoolMap(message)
 
-		zeta := charconv.ToBoolMap(message)
-
-		printZeta(zeta)
+		printBoolMap(boolMap)
 	},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
+
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -47,14 +42,16 @@ func Execute() {
 func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.Flags().BoolP("nonresponsive", "n", false, "print message to non responsive mode (in one line)")
+//	rootCmd.Flags().Bool(&nonResponsive, "nonresponsive", "n",
+//		"Print message to non responsive mode (in one line)")
 }
 
 
-func printZeta(zeta [][]bool) {
-	for y, row := range zeta {
+func printBoolMap(boolMap [][]bool) {
+	for y, row := range boolMap {
 		for x, _ := range row {
-			if zeta[y][x] {
+			if boolMap[y][x] {
 				fmt.Print("▓")
 			} else {
 				fmt.Print("░")

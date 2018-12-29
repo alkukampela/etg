@@ -3,20 +3,48 @@ package charconv
 import (
 	"image"
 	"image/color"
+	"strings"
 
 	"github.com/pbnjay/pixfont"
 )
 
-func ToBoolMap(msg string) [][]bool {
-	height := 8
-	textWidth := pixfont.MeasureString(msg)
+const CharHeight = 8
 
-	img := image.NewRGBA(image.Rect(0, 0, textWidth, height))
-	pixfont.DrawString(img, 0, 0, msg, color.Black)
+func MessageToBoolMap(message string) [][]bool {
+	height := countRows(message) * CharHeight
+	width := longestWordWidth(message)
+	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	boolMap := make([][]bool, height)
+	drawMessageToImage(message, img)
+	return imageToBoolMap(img)
+}
+
+func countRows(message string) int {
+	return strings.Count(message, "\n") + 1
+}
+
+func longestWordWidth(message string) int {
+	words := strings.Split(message, "\n")
+	longestWord := 0
+	for _, word := range words {
+		if (pixfont.MeasureString(word) > longestWord) {
+			longestWord = pixfont.MeasureString(word)
+		}
+	}
+	return longestWord
+}
+
+func drawMessageToImage(message string, targetImage pixfont.Drawable) {
+	words := strings.Split(message, "\n")
+	for row, word := range words {
+		pixfont.DrawString(targetImage, 0, row*CharHeight, word, color.Black)
+	}
+}
+
+func imageToBoolMap(img *image.RGBA) [][]bool {
+	boolMap := make([][]bool, img.Bounds().Max.Y)
 	for i := range boolMap {
-		boolMap[i] = make([]bool, textWidth)
+		boolMap[i] = make([]bool, img.Bounds().Max.X)
 	}
 
 	for y, row := range boolMap {
@@ -30,3 +58,5 @@ func ToBoolMap(msg string) [][]bool {
 
 	return boolMap
 }
+
+
