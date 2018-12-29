@@ -11,7 +11,6 @@ func Format(message string, responsiveMode bool) string {
 	return message
 }
 
-
 func separateCharsWithNewlines(message string) string {
 	var runes = []rune(message)
 	var builder strings.Builder

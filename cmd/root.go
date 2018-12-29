@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/alkukampela/etg/emojier"
 	"github.com/alkukampela/etg/charconv"
 	"github.com/alkukampela/etg/messageformatter"
 
@@ -25,8 +26,8 @@ var (
 			message := strings.Join(args, " ")
 			formattedMessage := messageformatter.Format(message, responsive)
 			boolMap := charconv.MessageToBoolMap(formattedMessage)
-
-			printBoolMap(boolMap)
+			output := emojier.EmojifyBoolMap(boolMap, ":pizza:")
+			fmt.Println(output)
 		},
 	}
 )
@@ -41,19 +42,4 @@ func Execute() {
 func init() {
 	rootCmd.Flags().BoolVarP(&responsive, "responsive", "r", false,
 		"print message in responsive mode (one letter per line)")
-}
-
-
-
-func printBoolMap(boolMap [][]bool) {
-	for y, row := range boolMap {
-		for x, _ := range row {
-			if boolMap[y][x] {
-				fmt.Print("▓")
-			} else {
-				fmt.Print("░")
-			}
-		}
-		fmt.Println("")
-	}
 }
