@@ -11,12 +11,15 @@ import (
 const CharHeight = 8
 
 func MessageToBoolMap(message string) [][]bool {
+	image := createCanvas(message)
+	drawMessageToImage(message, image)
+	return imageToBoolMap(image)
+}
+
+func createCanvas(message string) *image.RGBA {
 	height := countRows(message) * CharHeight
 	width := longestWordWidth(message)
-	img := image.NewRGBA(image.Rect(0, 0, width, height))
-
-	drawMessageToImage(message, img)
-	return imageToBoolMap(img)
+	return image.NewRGBA(image.Rect(0, 0, width, height))
 }
 
 func countRows(message string) int {
@@ -41,15 +44,15 @@ func drawMessageToImage(message string, targetImage pixfont.Drawable) {
 	}
 }
 
-func imageToBoolMap(img *image.RGBA) [][]bool {
-	boolMap := make([][]bool, img.Bounds().Max.Y)
+func imageToBoolMap(image *image.RGBA) [][]bool {
+	boolMap := make([][]bool, image.Bounds().Max.Y)
 	for i := range boolMap {
-		boolMap[i] = make([]bool, img.Bounds().Max.X)
+		boolMap[i] = make([]bool, image.Bounds().Max.X)
 	}
 
 	for y, row := range boolMap {
 		for x, _ := range row {
-			_, _, _, opacity  := img.At(x, y).RGBA()
+			_, _, _, opacity  := image.At(x, y).RGBA()
 			if opacity != 0 {
 				boolMap[y][x] = true
 			}
@@ -58,5 +61,3 @@ func imageToBoolMap(img *image.RGBA) [][]bool {
 
 	return boolMap
 }
-
-
